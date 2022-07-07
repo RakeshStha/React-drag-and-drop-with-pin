@@ -6,6 +6,7 @@ export const Home = () => {
 
   const url = "https://jsonplaceholder.typicode.com/posts?_limit=10";
 
+
   useEffect(() => {
     fetch(url)
       .then((res) => {
@@ -14,7 +15,22 @@ export const Home = () => {
         }
         return res.json();
       })
-      .then((data) => setData(data));
+      .then((data) => {
+        let newData = [];
+        data.forEach((o, i) => {
+          newData.push({
+            pin: "n",
+            order: i+1,
+            id: o.id,
+            index: i,
+            title: o.title,
+            // body: o.body,
+          });
+        });
+
+        setData(newData)
+
+      });
   }, []);
 
   const Pin = (e) => {
@@ -22,8 +38,9 @@ export const Home = () => {
     let newData = [];
     data.forEach((o, i) => {
       newData.push({
-        pin: e === o.id ? "y" : o.pin ? o.pin : "n",
-        order: data.length - i + "",
+        pin: e === o.order ? "y" : o.pin ? o.pin : "n",
+        order: data?.length - i + "",
+        // order: i+1,
         id: o.id,
         index: i,
         // title: o.title,
@@ -46,7 +63,7 @@ export const Home = () => {
     const [removed] = newItems.splice(result.source.index, 1);
     newItems.splice(result.destination.index, 0, removed);
     setData(newItems);
-    console.log("@data", newItems);
+    console.log("@data", newItems)
     // newItems?.map((o, i) => {
     //   if (o.pin) {
     //     if (o.pin === "y") {
@@ -62,69 +79,76 @@ export const Home = () => {
     // });
   }
 
+  const AddCard = () => {
+    setData([...Data, {id: Data?.length + 1, order: Data?.length + 1, pin: "n"} ]) 
+  }
+
   return (
     <div className="d-flex justify-content-center">
       <div className="col-sm-12 col-md-6 col-lg-4">
-        <h5 className="mt-4 py-3"> Order with pin</h5>
+        <div className="d-flex justify-content-between mt-4 ">
+        <h5 className="m-0 p-0"> Order with pin</h5>
+        <button className="btn btn-sm btn-success" onClick={() => AddCard()}>Add Card</button>
+        </div>
         <DragDropContext onDragEnd={(result) => onDragEnd(result)}>
           <Droppable droppableId="droppable">
             {(provided, snapshot) => (
               <div {...provided.droppableProps} ref={provided.innerRef}>
-                {Data.map((o, i) => (
-                  <Draggable draggableId={`${o.id}`} key={o.id} index={i}>
-                    {(provided, snapshot) => (
-                      <div ref={provided.innerRef} {...provided.draggableProps}>
-                        <div className="card m-3 py-2">
-                          <div className="d-flex p-2 justify-content-between align-items-center pt-0 mt-0">
-                            <div className="border-end p-3">
-                              <span>Index: {i}</span>
-                            </div>
-                            <div className="">
-                              <div className="d-flex justify-content-between p-2">
-                                <span>Id: {o.id}</span>
-                              </div>
-                              <h6 className="card-title p-1 pb-0">
-                                {o.title
-                                  ? o.title?.length < 10
-                                    ? o.title
-                                    : o.title?.slice(0, 10)
-                                  : ""}
-                              </h6>
-                              <div className="card-body p-0 mt-0 pt-0">
-                                {o.body ? "" : <span>Order = {o.order}</span>}
-                              </div>
-                            </div>
-                            <div className="d-flex align-items-center justify-content-center border-start border-end px-3">
-                              <button
-                                className="btn btn-sm btn-outline-primary"
-                                onClick={() => Pin(o.id)}
-                              >
-                                Pin
-                              </button>
-                            </div>
-                            <div className="d-flex justify-content-around align-items-center px-2">
-                              {o.pin === "y" ? (
-                                <span className="text-start">
-                                  <i class="ri-pushpin-fill"></i>
-                                </span>
-                              ) : (
-                                <span></span>
-                              )}
-                              {o.pin && o.pin === "y" ? null : (
-                                <span
-                                  className="user-select-all cursor-pointer"
-                                  {...provided.dragHandleProps}
-                                >
-                                  <i class="ri-drag-move-2-line fs-4"></i>
-                                </span>
-                              )}
-                            </div>
+                {Data?.sort((a,b) => b.order - a.order)?.map((o, i) => 
+                <Draggable draggableId={`${o.id}`} key={o.id} index={i}>
+                {(provided, snapshot) => (
+                  <div ref={provided.innerRef} {...provided.draggableProps}>
+                    <div className="card my-3 py-2">
+                      <div className="d-flex p-2 justify-content-between align-items-center pt-0 mt-0">
+                        <div className="border-end p-3">
+                          <span>Index: {i + 1}</span>
+                        </div>
+                        <div className="">
+                          <div className="d-flex justify-content-between p-2">
+                            <span>Id: {o.id}</span>
+                          </div>
+                          <h6 className="card-title p-1 pb-0">
+                            {o.title
+                              ? o.title?.length < 10
+                                ? o.title
+                                : o.title?.slice(0, 10)
+                              : ""}
+                          </h6>
+                          <div className="card-body p-0 mt-0 pt-0">
+                            {o.body ? "" : <span>Order = {o.order}</span>}
                           </div>
                         </div>
+                        <div className="d-flex align-items-center justify-content-center border-start border-end px-3">
+                          <button
+                            className="btn btn-sm btn-outline-primary"
+                            onClick={() => Pin(o.order)}
+                          >
+                            Pin
+                          </button>
+                        </div>
+                        <div className="d-flex justify-content-around align-items-center px-2">
+                          {o.pin === "y" ? (
+                            <span className="text-start">
+                              <i class="ri-pushpin-fill"></i>
+                            </span>
+                          ) : (
+                            <span></span>
+                          )}
+                          {o.pin && o.pin === "y" ? null : (
+                            <span
+                              className="user-select-all cursor-pointer"
+                              {...provided.dragHandleProps}
+                            >
+                              <i class="ri-drag-move-2-line fs-4"></i>
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    )}
-                  </Draggable>
-                ))}
+                    </div>
+                  </div>
+                )}
+              </Draggable>
+                )}
               </div>
             )}
           </Droppable>
