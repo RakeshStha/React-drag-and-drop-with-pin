@@ -46,7 +46,7 @@ export const Home = () => {
     const [removed] = newItems.splice(result.source.index, 1);
     newItems.splice(result.destination.index, 0, removed);
     setData(newItems);
-    // console.log("@data", newItems);
+    console.log("@data", newItems);
     // newItems?.map((o, i) => {
     //   if (o.pin) {
     //     if (o.pin === "y") {
@@ -64,7 +64,7 @@ export const Home = () => {
 
   return (
     <div className="d-flex justify-content-center">
-      <div className="col-sm-4">
+      <div className="col-sm-12 col-md-6 col-lg-4">
         <h5 className="mt-4 py-3"> Order with pin</h5>
         <DragDropContext onDragEnd={(result) => onDragEnd(result)}>
           <Droppable droppableId="droppable">
