@@ -45,20 +45,21 @@ export const Home = () => {
     const newItems = [...Data];
     const [removed] = newItems.splice(result.source.index, 1);
     newItems.splice(result.destination.index, 0, removed);
-    console.log("@data", newItems);
-    newItems?.map((o, i) => {
-      if (o.pin) {
-        if (o.pin === "y") {
-          alert("Pin data order can't be changed");
-          return setData(Data);
-        }
-        else {
-          return setData(newItems);
-        }
-      } else {
-        return setData(newItems);
-      }
-    });
+    setData(newItems);
+    // console.log("@data", newItems);
+    // newItems?.map((o, i) => {
+    //   if (o.pin) {
+    //     if (o.pin === "y") {
+    //       alert("Pin data order can't be changed");
+    //       return setData(Data);
+    //     }
+    //     else {
+    //       return setData(newItems);
+    //     }
+    //   } else {
+    //     return setData(newItems);
+    //   }
+    // });
   }
 
   return (
